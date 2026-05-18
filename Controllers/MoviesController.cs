@@ -23,6 +23,19 @@ namespace MovieQuotesAPI.Controllers
         {
             var movies = await _context.Movies
                 .Include(m => m.Quotes)
+                .Select(m => new MovieResponseDto
+                {
+                    Id = m.Id,
+                    TitleEn = m.TitleEn,
+                    TitleKa = m.TitleKa,
+                    Quotes = m.Quotes.Select(q => new QuoteDto
+                    {
+                        Id = q.Id,
+                        QuoteEn = q.QuoteEn,
+                        QuoteKa = q.QuoteKa,
+                        ImgUrl = q.ImagUrl
+                    }).ToList()
+                })
                 .ToListAsync();
 
             return Ok(movies);
@@ -33,7 +46,21 @@ namespace MovieQuotesAPI.Controllers
         {
             var movie = await _context.Movies
                 .Include(m => m.Quotes)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Where(m => m.Id == id)
+                .Select(m => new MovieResponseDto
+                {
+                    Id = m.Id,
+                    TitleEn = m.TitleEn,
+                    TitleKa = m.TitleKa,
+                    Quotes = m.Quotes.Select(q => new QuoteDto
+                    {
+                        Id = q.Id,
+                        QuoteEn = q.QuoteEn,
+                        QuoteKa = q.QuoteKa,
+                        ImgUrl = q.ImagUrl
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
 
             if (movie == null)
                 return NotFound ();
