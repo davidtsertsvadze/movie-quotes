@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieQuotesAPI.Data;
 using MovieQuotesAPI.Models;
 using MovieQuotesAPI.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MovieQuotesAPI.Controllers
 {
@@ -39,6 +40,7 @@ namespace MovieQuotesAPI.Controllers
             return Ok(movie);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(MovieCreateDto dto)
         {
@@ -54,6 +56,7 @@ namespace MovieQuotesAPI.Controllers
             return Ok(movie);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, MovieUpdateDto dto)
         {
@@ -70,6 +73,7 @@ namespace MovieQuotesAPI.Controllers
             return Ok(movie);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
