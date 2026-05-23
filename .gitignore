@@ -16,3 +16,7 @@ appsettings.Development.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# SQLite Database files
+*.db
+movies.db
