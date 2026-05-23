@@ -6,6 +6,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using MovieQuotesAPI.Models;
 
 namespace MovieQuotesAPI.Controllers
 {
@@ -15,6 +17,7 @@ namespace MovieQuotesAPI.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _config;
+        private readonly PasswordHasher<Models.Admin> _passwordHasher = new();
 
         public AuthController(AppDbContext context, IConfiguration config)
         {
@@ -22,17 +25,46 @@ namespace MovieQuotesAPI.Controllers
             _config = config;
         }
 
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterDto dto)
+        {
+            var existingUser = await _context.Admins
+                .FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+            if (existingUser != null)
+                return BadRequest("User already exists!");
+
+            var admin = new Admin
+            {
+                Name = dto.Name,
+                Email = dto.Email
+            };
+
+            admin.PasswordHash = _passwordHasher.HashPassword(admin, dto.Password);
+
+            _context.Admins.Add(admin);
+            await _context.SaveChangesAsync();
+
+            return Ok("User created successfully");
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
+            
             var admin = await _context.Admins
                 .FirstOrDefaultAsync(a => a.Email == dto.Email);
 
             if (admin == null)
                 return Unauthorized("Invalid email");
 
-            // ⚠️ დროებით plain password comparison (შემდეგ დავამატებთ hashing-ს)
-            if (admin.PasswordHash != dto.Password)
+            var result = _passwordHasher.VerifyHashedPassword(
+                admin,
+                admin.PasswordHash,
+                dto.Password
+            );
+
+            if (result == PasswordVerificationResult.Failed)
                 return Unauthorized("Invalid password");
 
             var token = GenerateJwtToken(admin);
@@ -44,7 +76,8 @@ namespace MovieQuotesAPI.Controllers
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, admin.Email)
+                new Claim(ClaimTypes.Name, admin.Email),
+                new Claim(ClaimTypes.Role, "Admin")
             };
 
             var key = new SymmetricSecurityKey(

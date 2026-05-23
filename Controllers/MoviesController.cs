@@ -33,7 +33,7 @@ namespace MovieQuotesAPI.Controllers
                         Id = q.Id,
                         QuoteEn = q.QuoteEn,
                         QuoteKa = q.QuoteKa,
-                        ImgUrl = q.ImagUrl
+                        ImgUrl = q.ImagUrl 
                     }).ToList()
                 })
                 .ToListAsync();
@@ -67,7 +67,7 @@ namespace MovieQuotesAPI.Controllers
             return Ok(movie);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(MovieCreateDto dto)
         {
@@ -83,7 +83,7 @@ namespace MovieQuotesAPI.Controllers
             return Ok(movie);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, MovieUpdateDto dto)
         {
@@ -100,7 +100,7 @@ namespace MovieQuotesAPI.Controllers
             return Ok(movie);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

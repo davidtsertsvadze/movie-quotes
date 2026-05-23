@@ -18,7 +18,7 @@ namespace MovieQuotesAPI.Controllers
             _context = context;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(QuoteCreateDto dto)
         {
@@ -105,7 +105,7 @@ namespace MovieQuotesAPI.Controllers
             });
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, QuoteUpdateDto dto)
         {
@@ -122,7 +122,7 @@ namespace MovieQuotesAPI.Controllers
             return NoContent();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
