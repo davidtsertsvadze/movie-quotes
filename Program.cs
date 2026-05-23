@@ -97,4 +97,19 @@ app.UseAuthorization();
 app.MapControllers();
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.Migrate(); // ეს ხაზი ავტომატურად შექმნის ცხრილებს, თუ არ არსებობს
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred migrating the DB.");
+    }
+}
 app.Run($"http://0.0.0.0:{port}");
