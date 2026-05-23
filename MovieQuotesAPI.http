@@ -1,4 +1,4 @@
-@MovieQuotesAPI_HostAddress = http://localhost:5098
+@MovieQuotesAPI_HostAddress = http://localhost:8080
 
 GET {{MovieQuotesAPI_HostAddress}}/weatherforecast/
 Accept: application/json
